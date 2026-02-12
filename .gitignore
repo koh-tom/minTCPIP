@@ -1,0 +1,23 @@
+# Zig
+zig-cache/
+.zig-cache/
+zig-out/
+build/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Gemnini AI dir
+.gemini/
+.antigravity/
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+example/

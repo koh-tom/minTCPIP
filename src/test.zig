@@ -24,28 +24,34 @@ fn setup() i32 {
     };
     std.posix.sigaction(std.posix.SIG.INT, &sa, null);
 
-    util.infof(@src(), "setup protocol stack...", .{});
+    util.infof(@src(), "セットアップ開始", .{});
 
-    if (net.init()) |_| {} else |_| {
-        util.errorf(@src(), "net_init() failure", .{});
+    net.init() catch |err| {
+        util.errorf(@src(), "セットアップ失敗: {}", .{err});
         return -1;
-    }
-    if (net.run()) |_| {} else |_| {
-        util.errorf(@src(), "net_run() failure", .{});
+    };
+    net.run() catch |err| {
+        util.errorf(@src(), "サービス開始失敗: {}", .{err});
         return -1;
-    }
+    };
     return 0;
 }
 
 /// プロトコルスタックの後片付け
 fn cleanup() i32 {
-    util.infof(@src(), "cleanup protocol stack...", .{});
+    util.infof(@src(), "クリーンアップ開始", .{});
     net.shutdown();
+    util.infof(@src(), "クリーンアップ完了", .{});
     return 0;
 }
 
 /// アプリケーションのメインロジック
 fn app_main() i32 {
+    util.debugf(@src(), "Ctrl+Cで終了", .{});
+    while (!terminate) {
+        minTCPIP.sync.sleepNs(1000 * std.time.ns_per_ms);
+    }
+    util.debugf(@src(), "アプリケーションメイン完了", .{});
     return 0;
 }
 
@@ -53,14 +59,14 @@ pub fn main() !void {
     var ret: i32 = 0;
 
     if (setup() == -1) {
-        util.errorf(@src(), "setup() failure", .{});
+        util.errorf(@src(), "setup() 失敗", .{});
         std.process.exit(1);
     }
 
     ret = app_main();
 
     if (cleanup() == -1) {
-        util.errorf(@src(), "cleanup() failure", .{});
+        util.errorf(@src(), "cleanup() 失敗", .{});
         std.process.exit(1);
     }
 

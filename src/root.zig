@@ -9,6 +9,9 @@ pub const sync = @import("sync.zig");
 // プラットフォーム依存処理 (アロケータ、乱数、割り込み、タイマー等) のエクスポート
 pub const platform = @import("platform.zig");
 
+// ネットワーク管理・プロトコルスタック本体のエクスポート
+pub const net = @import("net.zig");
+
 // ============================================================
 // platform 空間からアクセス可能なサブモジュール構造
 //   minTCPIP.platform.intr   — 割り込み管理

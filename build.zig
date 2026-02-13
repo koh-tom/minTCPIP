@@ -142,6 +142,25 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&run_mod_tests.step);
     test_step.dependOn(&run_exe_tests.step);
 
+    // net_test executable
+    const net_test_exe = b.addExecutable(.{
+        .name = "net_test",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/test.zig"),
+            .target = target,
+            .optimize = optimize,
+            .imports = &.{
+                .{ .name = "minTCPIP", .module = mod },
+            },
+        }),
+    });
+    b.installArtifact(net_test_exe);
+
+    const net_test_run = b.addRunArtifact(net_test_exe);
+    const net_test_step = b.step("net_test", "Run the network test");
+    net_test_step.dependOn(&net_test_run.step);
+    net_test_run.step.dependOn(b.getInstallStep());
+
     // Just like flags, top level steps are also listed in the `--help` menu.
     //
     // The Zig build system is entirely implemented in userland, which means
